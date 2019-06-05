@@ -22,7 +22,8 @@ const user = bookshelf.Model.extend({
               email: this.get('email'),
               active: this.get('active')
             },
-            process.env.JWT_SECRETKEY
+            process.env.JWT_SECRETKEY,
+            { expiresIn: '24h' }
             );
           },
           this.auth=()=>{

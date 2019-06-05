@@ -3,7 +3,7 @@ var jwt = require('jsonwebtoken');
 require('dotenv').config();
 
 //apollo-error
-const {  AuthenticationError,ApolloError } = require("apollo-server");
+const {  AuthenticationError } = require("apollo-server");
 
 module.exports = {
     /** 

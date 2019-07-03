@@ -50,6 +50,26 @@ const personDataSource = {
             console.log(error);
             throw error;
         }
+    },
+
+    //edited
+    async editPerson(id,name,age,active){
+        try{
+            //validation person
+            var bdPerson = await person.where({id:id}).fetch();
+            if(bdPerson==null) return globalResponse("CODE1002",false,"id parameter it does not correspond to person");
+
+            //map new data 
+            bdPerson.set('name',name);
+            bdPerson.set('age',age);
+            bdPerson.set('active',active);
+
+            var dataSaveChange = await bdPerson.save();
+            return dataSaveChange.serialize()!=null?globalResponse("CODE1001",true,"Person edited correctly",'person',dataSaveChange.serialize()):globalResponse("CODE001X",false,"failed action update",'person',null);
+        }catch(error){
+            console.log(error);
+            throw error;
+        }
     }
 }//end dataSource
 

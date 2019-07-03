@@ -52,6 +52,8 @@ const typeDefs = gql`
         ##person
         #create new person
         createPerson(person: newPerson!): createdPerson!
+        #update person
+        editPerson(person: editPerson): editedPerson!
         
         ##order
         #Create new order
@@ -62,38 +64,54 @@ const typeDefs = gql`
         oAuth(credentials: credentials): oAuth!
     }
 
-    #input's
+    ##input's
+    #persons
     input newPerson{
         name: String!
         age: Int!
         active: Boolean!
     }
 
+    input editPerson{
+        id: ID!
+        name: String!
+        age: Int!
+        active: Boolean!
+    }
+    #orders
     input newOrder{
         type: summaryType!
         observation: String
         idPerson: ID!
     }
-
+    #security
     input credentials{
         email: String!
         password: String!
     }
 
-    #global response for mutation
+    ##global response for mutation
+    #persons
     type createdPerson implements globalResponse{
         code: codeResponse!
         message: String!
         success: Boolean!
         person: Person
     }
+    type editedPerson implements globalResponse{
+        code: codeResponse!
+        message: String!
+        success: Boolean!
+        person: Person
+    }
+    #orders
     type createdOrder implements globalResponse{
         code: codeResponse!
         message: String!
         success: Boolean!
         order: Order
     }
-
+    #security
     type oAuth implements globalResponse{
         code: codeResponse!
         message: String!
@@ -111,6 +129,8 @@ const typeDefs = gql`
    #enum for global response 
    enum codeResponse{
        CODE1000 #Person Created Sucecess
+       CODE1001 #Person Updated success
+       CODE1002 #Person missing with id parameters 
 
        CODE2000 #Order Created Success
        CODE2001 #person missing with idPerson paremeters

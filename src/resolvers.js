@@ -51,6 +51,11 @@ const resolvers = {
             pubSub.publish([createdPerson()],{createPerson:createdPersonResult});
             return createdPersonResult;
         },
+        editPerson: async(_,{person},{user})=>{
+            authorize(user,['admin']);
+            const {id,name,age,active} = person;
+            return await personDataSource.editPerson(id,name,age,active);
+        },
 
         //////////////
         //order Source

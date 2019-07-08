@@ -70,7 +70,25 @@ const personDataSource = {
             console.log(error);
             throw error;
         }
+    },
+
+    //deleted
+    async deletePerson(id){
+        try{
+            //validation person
+            var bdPerson = await person.where({id:id}).fetch({ withRelated: ['order'] });
+            if(bdPerson==null) return globalResponse("CODE1002",false,"id parameter it does not correspond to person");
+
+            //delete
+            await bdPerson.destroy({cascade:true});
+
+            return globalResponse("CODE1003",true,"Person and his orders deleted succes");
+        }catch(error){
+            console.log(error);
+            throw error;
+        }
     }
+
 }//end dataSource
 
 //class for reducer

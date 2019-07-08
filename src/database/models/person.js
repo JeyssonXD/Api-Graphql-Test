@@ -1,7 +1,10 @@
+//bookshelf js
 const config = require('../config/config');
 var bookshelf = require('bookshelf')(config);
+var cascadeDelete = require('bookshelf-cascade-delete');
 bookshelf.plugin('registry');
-
+bookshelf.plugin(cascadeDelete);
+//other package npm
 var validator = require('validator');
 
 
@@ -25,6 +28,10 @@ const person = bookshelf.Model.extend({
     order: function(){
         return this.hasMany(require('./order'),'idPerson');
     }
+},
+
+{
+    dependents:['order']
 });
 
 module.exports = bookshelf.model('person',person);

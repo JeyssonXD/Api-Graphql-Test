@@ -56,6 +56,11 @@ const resolvers = {
             const {id,name,age,active} = person;
             return await personDataSource.editPerson(id,name,age,active);
         },
+        deletePerson:async(_,{person},{user})=>{
+            authorize(user,['admin']);
+            const {id} = person;
+            return await personDataSource.deletePerson(id);
+        },
 
         //////////////
         //order Source

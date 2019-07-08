@@ -54,6 +54,8 @@ const typeDefs = gql`
         createPerson(person: newPerson!): createdPerson!
         #update person
         editPerson(person: editPerson): editedPerson!
+        #Delete person
+        deletePerson(person: deletePerson): deletedPerson!
         
         ##order
         #Create new order
@@ -77,6 +79,10 @@ const typeDefs = gql`
         name: String!
         age: Int!
         active: Boolean!
+    }
+
+    input deletePerson{
+        id:ID!
     }
     #orders
     input newOrder{
@@ -103,6 +109,11 @@ const typeDefs = gql`
         message: String!
         success: Boolean!
         person: Person
+    }
+    type deletedPerson implements globalResponse{
+        code: codeResponse!
+        message: String!
+        success: Boolean!
     }
     #orders
     type createdOrder implements globalResponse{
@@ -131,6 +142,7 @@ const typeDefs = gql`
        CODE1000 #Person Created Sucecess
        CODE1001 #Person Updated success
        CODE1002 #Person missing with id parameters 
+       CODE1003 #Person and his orders deleted succes
 
        CODE2000 #Order Created Success
        CODE2001 #person missing with idPerson paremeters

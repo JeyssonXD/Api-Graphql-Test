@@ -20,7 +20,6 @@ const order = bookshelf.Model.extend({
             return false;
         }
     },
-
     //relationship
     person: function(){
         return this.belongsTo(require('./person'),"idPerson");

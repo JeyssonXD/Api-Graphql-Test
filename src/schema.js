@@ -4,8 +4,8 @@ const typeDefs = gql`
 
     #Query Defined fetched
     type Query{
-        people: [Person]
         person(id: ID!): Person
+        persons(view: viewPerson): dataPerson
         orders: [Order]
         order(id: ID!): Order
     }
@@ -53,20 +53,33 @@ const typeDefs = gql`
         #create new person
         createPerson(person: newPerson!): createdPerson!
         #update person
-        editPerson(person: editPerson): editedPerson!
+        editPerson(person: editPerson!): editedPerson!
         #Delete person
-        deletePerson(person: deletePerson): deletedPerson!
+        deletePerson(person: deletePerson!): deletedPerson!
         
         ##order
         #Create new order
-        createOrder(order: newOrder): createdOrder!
+        createOrder(order: newOrder!): createdOrder!
 
         ##security
         #sign
-        oAuth(credentials: credentials): oAuth!
+        oAuth(credentials: credentials!): oAuth!
     }
 
-    ##input's
+    ###input's
+    
+    ##query
+    input viewPerson{
+        pageCurrent: Int
+        sort: sort #default asc
+        id: ID
+        name: String
+        age: Int
+        active: Boolean
+    }
+
+    ##mutations
+
     #persons
     input newPerson{
         name: String!
@@ -94,6 +107,13 @@ const typeDefs = gql`
     input credentials{
         email: String!
         password: String!
+    }
+    ##global response for Query
+    type dataPerson{
+        persons:[Person]
+        count: Int
+        pageCurrent: Int
+        paginated:Boolean
     }
 
     ##global response for mutation
@@ -135,6 +155,12 @@ const typeDefs = gql`
        code: codeResponse!
        message: String!
        success: Boolean!
+   }
+
+   #enum for querys
+   enum sort{
+       asc #asc order
+       desc #desc order
    }
 
    #enum for global response 

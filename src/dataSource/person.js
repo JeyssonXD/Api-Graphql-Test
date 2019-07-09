@@ -3,8 +3,14 @@
 //import helper class
 const globalResponse = require('../helper/globalResponse');
 
+//import validator
+var personValidator = require('../helper/validators/personValidator');
+
 //import models
 const person = require("../database/models/person");
+
+//size for page
+let pageSize = 10;
 
 const personDataSource = {
     
@@ -15,21 +21,64 @@ const personDataSource = {
         return JsonResponse;
     },
 
-    //fetch all
-    async getPeople () {
-        try{
-            var peoples = await person.fetchAll({withRelated:["order"]});
-            return peoples.serialize()!=null ? peoples.serialize().map(person => this.personReducer(person)):[]; 
-        }catch(error){
-            console.log(error);
-            throw error;
-        }
-    },
     //find by ID
     async getPerson(id){
         try{
             var personData = await person.where({id:id}).fetch({withRelated:["order"]});
             return personData!=null?this.personReducer(personData.serialize()):[];
+        }catch(error){
+            console.log(error);
+            throw error;
+        }
+    },
+    //high sorting
+    async getPersons(view){
+        try{
+            //all data
+            if(view==null){
+                var peoples = await person.fetchAll({withRelated:["order"]});
+                var count = await person.count('id');
+                return {persons:peoples.serialize().map(person => this.personReducer(person)),count:count,paginated:false};
+            }
+            //high sorting
+            else{
+
+                if(view.pageCurrent==null){
+                    view.pageCurrent= 1;
+                }
+
+                //set data
+                var search = new personValidator(view.id,view.name,view.age,view.active);
+                
+                //context
+                let contextPerson = person;
+
+                if(search.isValid()){
+                    //identification
+                    if(view.id!=null){
+                        contextPerson = contextPerson.where({id:view.id});
+                    }
+                    //name
+                    if(view.name!=null){
+                        contextPerson = contextPerson.where({name:view.name});
+                    }
+                    //age
+                    if(view.age!=null){
+                        contextPerson = contextPerson.where({age:view.age});
+                    }
+                    //active
+                    if(view.active!=null){
+                        contextPerson = contextPerson.where({active:view.active});
+                    }
+                }
+
+                //paginate
+                var peoples = await contextPerson.fetchPage({page:view.pageCurrent,pageSize,withRelated:["order"]});
+
+                //counts element
+                var count = await contextPerson.count('id');
+                return { persons:peoples.serialize().map(person => this.personReducer(person)),count,pageCurrent:view.pageCurrent,paginated:true};
+            }
         }catch(error){
             console.log(error);
             throw error;

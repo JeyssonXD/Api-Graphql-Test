@@ -5,6 +5,9 @@ var accountDataSource = require('./dataSource/account');
 
 //helpers
 const { authorize } = require('./helper/security');
+
+
+
 //sucription
 const {createdPerson}  = require('./helper/schema/suscription');
 
@@ -15,26 +18,26 @@ const resolvers = {
         //////////////
         //person source
 
-        //query
-        people:  async(_,args,context)=>{
-            authorize(context.user,['admin']);
-            return await personDataSource.getPeople();
-        },
-        //query
+        //find by
         person: async(_,args,context)=>{
             authorize(context.user,['admin']);
             return await personDataSource.getPerson(args.id);
+        },
+        //find all advance
+        persons: async(_,{view},context)=>{
+            authorize(context.user,['admin']);
+            return await personDataSource.getPersons(view);
         },
 
         /////////////
         //order source
 
-        //query
+        //find all
         orders: async(_,args,context)=>{
             authorize(context.user,['admin','distributor']);
             return await orderDataSource.getOrders();
         },
-        //query
+        //find by
         order: async(_,args,context)=>{
             authorize(context.user,['admin','distributor']);
             return await orderDataSource.getOrder(args.id);

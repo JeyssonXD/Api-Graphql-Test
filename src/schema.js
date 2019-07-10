@@ -4,7 +4,6 @@ const typeDefs = gql`
 
     #Query Defined fetched
     type Query{
-        person(id: ID!): Person
         persons(view: viewPerson): dataPerson
         orders: [Order]
         order(id: ID!): Order

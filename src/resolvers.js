@@ -18,12 +18,7 @@ const resolvers = {
         //////////////
         //person source
 
-        //find by
-        person: async(_,args,context)=>{
-            authorize(context.user,['admin']);
-            return await personDataSource.getPerson(args.id);
-        },
-        //find all advance
+        //find fetch
         persons: async(_,{view},context)=>{
             authorize(context.user,['admin']);
             return await personDataSource.getPersons(view);

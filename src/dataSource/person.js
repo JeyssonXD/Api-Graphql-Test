@@ -20,17 +20,6 @@ const personDataSource = {
         var JsonResponse = new personReducer(id,name,age,active,order);
         return JsonResponse;
     },
-
-    //find by ID
-    async getPerson(id){
-        try{
-            var personData = await person.where({id:id}).fetch({withRelated:["order"]});
-            return personData!=null?this.personReducer(personData.serialize()):[];
-        }catch(error){
-            console.log(error);
-            throw error;
-        }
-    },
     //high sorting
     async getPersons(view){
         try{

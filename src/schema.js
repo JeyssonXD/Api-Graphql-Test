@@ -70,11 +70,16 @@ const typeDefs = gql`
     ##query
     input viewPerson{
         pageCurrent: Int
-        sort: sort #default asc
+        sort: sorting 
         id: ID
         name: String
         age: Int
         active: Boolean
+    }
+
+    input sorting{
+        type: sort! #default asc
+        field: fieldPerson!
     }
 
     ##mutations
@@ -96,6 +101,7 @@ const typeDefs = gql`
     input deletePerson{
         id:ID!
     }
+
     #orders
     input newOrder{
         type: summaryType!
@@ -158,8 +164,14 @@ const typeDefs = gql`
 
    #enum for querys
    enum sort{
-       asc #asc order
-       desc #desc order
+       ASC #asc order
+       DESC #desc order
+   }
+   enum fieldPerson{
+       id
+       name
+       age
+       active
    }
 
    #enum for global response 

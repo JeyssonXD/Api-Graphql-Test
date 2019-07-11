@@ -42,6 +42,7 @@ const personDataSource = {
                 //context
                 let contextPerson = person;
 
+                //search
                 if(search.isValid()){
                     //identification
                     if(view.id!=null){
@@ -61,9 +62,18 @@ const personDataSource = {
                     }
                 }
 
-                //paginate
-                var peoples = await contextPerson.fetchPage({page:view.pageCurrent,pageSize,withRelated:["order"]});
+                //finish serialize
+                var peoples;
 
+                //sorting if-else for problems order by with fetchPage
+                if(view.sort){
+                    //paginate with sorting
+                    peoples = await contextPerson.forge().orderBy(view.sort.field,view.sort.type).fetchPage({page:view.pageCurrent,pageSize,withRelated:["order"]});
+                }else{
+                    //paginate not sorting
+                    peoples = await contextPerson.fetchPage({page:view.pageCurrent,pageSize,withRelated:["order"]});
+                }
+                
                 //counts element
                 var count = await contextPerson.count('id');
                 return { persons:peoples.serialize().map(person => this.personReducer(person)),count,pageCurrent:view.pageCurrent,paginated:true};

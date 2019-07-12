@@ -38,44 +38,50 @@ const personDataSource = {
 
                 //set data
                 var search = new personValidator(view.id,view.name,view.age,view.active);
-                
+
                 //context
-                let contextPerson = person;
+                let QueriablePerson  = person;
+                let countWhere  = {};
 
-                //search
-                if(search.isValid()){
-                    //identification
-                    if(view.id!=null){
-                        contextPerson = contextPerson.where({id:view.id});
-                    }
-                    //name
-                    if(view.name!=null){
-                        contextPerson = contextPerson.where({name:view.name});
-                    }
-                    //age
-                    if(view.age!=null){
-                        contextPerson = contextPerson.where({age:view.age});
-                    }
-                    //active
-                    if(view.active!=null){
-                        contextPerson = contextPerson.where({active:view.active});
-                    }
-                }
+                QueriablePerson =  QueriablePerson.query((qb)=>{
 
-                //finish serialize
-                var peoples;
+                    //search
+                    if(search.isValid()){
+                        //identification
+                        if(view.id!=null){
+                           qb.where({id:view.id});
+                           countWhere = {...countWhere,id:view.id};
+                        }
+                        //name
+                        if(view.name!=null){
+                            qb.where({name:view.name});
+                            countWhere = {...countWhere,name:view.name};
+                        }
+                        //age
+                        if(view.age!=null){
+                            qb.where({age:view.age});
+                            countWhere = {...countWhere,age:view.age};
+                        }
+                        //active
+                        if(view.active!=null){
+                            qb.where({active:view.active});
+                            countWhere = {...countWhere,active:view.active};
+                        }
+                    }
 
-                //sorting if-else for problems order by with fetchPage
-                if(view.sort){
-                    //paginate with sorting
-                    peoples = await contextPerson.forge().orderBy(view.sort.field,view.sort.type).fetchPage({page:view.pageCurrent,pageSize,withRelated:["order"]});
-                }else{
-                    //paginate not sorting
-                    peoples = await contextPerson.fetchPage({page:view.pageCurrent,pageSize,withRelated:["order"]});
-                }
+                    //sort
+                    if(view.sort){
+                        qb.orderBy(view.sort.field,view.sort.type);
+                    }
+                    
+                });
                 
-                //counts element
-                var count = await contextPerson.count('id');
+                var peoples = await QueriablePerson.fetchPage({page:view.pageCurrent,pageSize,withRelated:["order"]});
+
+                var count = await person.where(countWhere).count('*');
+
+                console.log(count);
+                
                 return { persons:peoples.serialize().map(person => this.personReducer(person)),count,pageCurrent:view.pageCurrent,paginated:true};
             }
         }catch(error){

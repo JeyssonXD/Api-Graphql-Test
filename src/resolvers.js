@@ -2,6 +2,7 @@
 var personDataSource = require('./dataSource/person');
 var orderDataSource = require('./dataSource/order');
 var accountDataSource = require('./dataSource/account');
+var notificationDataSource = require('./dataSource/notification');
 
 //helpers
 const { authorize } = require('./helper/security');
@@ -9,7 +10,7 @@ const { authorize } = require('./helper/security');
 
 
 //sucription
-const {createdPerson}  = require('./helper/schema/suscription');
+const {notificationType}  = require('./helper/schema/suscription');
 
 const resolvers = {
 
@@ -36,6 +37,13 @@ const resolvers = {
         order: async(_,args,context)=>{
             authorize(context.user,['admin','distributor']);
             return await orderDataSource.getOrder(args.id);
+        },
+
+        //////////////
+        //notification source
+        notifications: async(_,args,{user})=>{
+            authorize(user,['admin','distributor']);
+            return await notificationDataSource.getNotifications();
         }
     },
 //Mutations
@@ -43,10 +51,11 @@ const resolvers = {
         /////////////
         //person Source
         createPerson: async(_,{person},{pubSub,user})=>{
-            authorize(user,['admin']);
+            authorize(user,['admin','distributor']);
             const { name,age,active } = person;
             var createdPersonResult =  await personDataSource.createPreson(name,age,active);
-            pubSub.publish([createdPerson()],{createPerson:createdPersonResult});
+            var feedNotification = await notificationDataSource.createNotification({text:"New Person: "+createdPersonResult.person.name,link:"/person/edit/"+createdPersonResult.person.id});
+            pubSub.publish([notificationType()],{notification:feedNotification});
             return createdPersonResult;
         },
         editPerson: async(_,{person},{user})=>{
@@ -69,6 +78,13 @@ const resolvers = {
         },
 
         //////////////
+        //notification Source
+        disabledNotification: async(_,{id},{user})=>{
+            authorize(user,["admin","distributor"]);
+            return await notificationDataSource.disabledNotification(id);
+        },
+
+        //////////////
         //security
         oAuth: async(_,{credentials},context,info) =>{
             //auth allow anonymous
@@ -79,10 +95,10 @@ const resolvers = {
 //Suscription
     Subscription:{
         //Person events
-        createPerson:{
+        notification:{
             subscribe: (_,__,{pubSub,user}) =>{
                 authorize(user,['admin']);
-                return pubSub.asyncIterator([createdPerson()])
+                return pubSub.asyncIterator([notificationType()])
             }
         }
     },

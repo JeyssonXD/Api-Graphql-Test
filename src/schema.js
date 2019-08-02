@@ -5,6 +5,7 @@ const typeDefs = gql`
     #Query Defined fetched
     type Query{
         persons(view: viewPerson): dataPerson
+        notifications: [Notification]
         orders: [Order]
         order(id: ID!): Order
     }
@@ -27,6 +28,14 @@ const typeDefs = gql`
         person: Person
     }
 
+    #Entity
+    type Notification{
+        id: ID
+        text: String
+        link: String
+        enable: Boolean
+    }
+
     #Entity virtual
     type Access{
         token: String
@@ -43,7 +52,7 @@ const typeDefs = gql`
     type Subscription{
         ##person
         #create new person
-        createPerson: createdPerson!
+        notification: Notification!
     }
 
     ##Mutation for create or update
@@ -59,6 +68,10 @@ const typeDefs = gql`
         ##order
         #Create new order
         createOrder(order: newOrder!): createdOrder!
+
+        ##notification
+        #disabled notification
+        disabledNotification(id: Int!): editedNotification!
 
         ##security
         #sign
@@ -140,6 +153,13 @@ const typeDefs = gql`
         message: String!
         success: Boolean!
     }
+    #notifications
+    type editedNotification implements globalResponse{
+        code: codeResponse!
+        message: String!
+        success: Boolean!
+        notification: Notification
+    }
     #orders
     type createdOrder implements globalResponse{
         code: codeResponse!
@@ -188,6 +208,8 @@ const typeDefs = gql`
        CODE3001 #active is false, not access
        CODE3002 #email not exist
        CODE3003 #password not match hash
+
+       CODE4000 #Disabled notification success
 
        CODE001X #Error internal
        CODE002X #Error parameters missing or invalid

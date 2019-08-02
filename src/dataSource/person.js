@@ -79,8 +79,6 @@ const personDataSource = {
                 var peoples = await QueriablePerson.fetchPage({page:view.pageCurrent,pageSize,withRelated:["order"]});
 
                 var count = await person.where(countWhere).count('*');
-
-                console.log(count);
                 
                 return { persons:peoples.serialize().map(person => this.personReducer(person)),count,pageCurrent:view.pageCurrent,paginated:true};
             }

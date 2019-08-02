@@ -1,5 +1,5 @@
 
 
 module.exports = {
-    createdPerson: ()=>{return "CREATED_PERSON"}
+    notificationType: ()=>{return "NOTIFICATIONS"}
 }

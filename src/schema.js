@@ -34,18 +34,13 @@ const typeDefs = gql`
         text: String
         link: String
         enable: Boolean
+        fecha: String
     }
 
     #Entity virtual
     type Access{
         token: String
         active: Boolean!
-    }
-
-    #enum summaryType
-    enum summaryType{
-        CANCELLED
-        APPROVED
     }
 
     ##Suscription 
@@ -71,7 +66,7 @@ const typeDefs = gql`
 
         ##notification
         #disabled notification
-        disabledNotification(id: Int!): editedNotification!
+        disabledNotification(filter: disableNotification!): editedNotification!
 
         ##security
         #sign
@@ -121,11 +116,19 @@ const typeDefs = gql`
         observation: String
         idPerson: ID!
     }
+
     #security
     input credentials{
         email: String!
         password: String!
     }
+
+    #notifications
+    input disableNotification{
+        id: ID!
+        type: typeNotification!
+    }
+
     ##global response for Query
     type dataPerson{
         persons:[Person]
@@ -182,17 +185,29 @@ const typeDefs = gql`
        success: Boolean!
    }
 
+   #enum for Mutation
+   #->notification
+   enum typeNotification{
+       person
+   }
+
    #enum for querys
    enum sort{
        ASC #asc order
        DESC #desc order
    }
+   #->person
    enum fieldPerson{
        id
        name
        age
        active
    }
+   #->orders
+    enum summaryType{
+        CANCELLED
+        APPROVED
+    }
 
    #enum for global response 
    enum codeResponse{
@@ -210,6 +225,7 @@ const typeDefs = gql`
        CODE3003 #password not match hash
 
        CODE4000 #Disabled notification success
+       CODE4001 #Notification not found
 
        CODE001X #Error internal
        CODE002X #Error parameters missing or invalid

@@ -11,6 +11,16 @@ const notification = bookshelf.Model.extend({
   //constructor
   constructor: function(){
       bookshelf.Model.apply(this,arguments);
+  },
+  //custom create
+  customCreatePerson: function(attributes){
+    return this
+      .save()
+      .tap(c=>this.related('notificationPerson').create(attributes))
+  },
+  //relationship
+  notificationPerson: function(){
+    return this.hasMany(require('./notificationPerson'),'idNotification');
   }
 }
 );

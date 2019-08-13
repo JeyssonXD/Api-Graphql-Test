@@ -54,7 +54,7 @@ const resolvers = {
             authorize(user,['admin','distributor']);
             const { name,age,active } = person;
             var createdPersonResult =  await personDataSource.createPreson(name,age,active);
-            var feedNotification = await notificationDataSource.createNotification({text:"New Person: "+createdPersonResult.person.name,link:"/person/edit/"+createdPersonResult.person.id});
+            var feedNotification = await notificationDataSource.createNotification({text:"New Person: "+createdPersonResult.person.name,link:"/person/edit/"+createdPersonResult.person.id,type:'person',ForeKeys:createdPersonResult.person.id});
             pubSub.publish([notificationType()],{notification:feedNotification});
             return createdPersonResult;
         },
@@ -79,9 +79,9 @@ const resolvers = {
 
         //////////////
         //notification Source
-        disabledNotification: async(_,{id},{user})=>{
+        disabledNotification: async(_,{filter},{user})=>{
             authorize(user,["admin","distributor"]);
-            return await notificationDataSource.disabledNotification(id);
+            return await notificationDataSource.disabledNotification(filter);
         },
 
         //////////////

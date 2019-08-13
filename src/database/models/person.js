@@ -27,6 +27,9 @@ const person = bookshelf.Model.extend({
     //relationship
     order: function(){
         return this.hasMany(require('./order'),'idPerson');
+    },
+    notificationPerson: function(){
+        return this.hasMany(require('./notificationPerson','idPerson'));
     }
 },
 

@@ -8,6 +8,7 @@ var globalResponse = require("../helper/globalResponse");
 
 //import notification
 const notification = require('../database/models/notification');
+const notificationPerson = require('../database/models/notificationPerson');
 
 const notificationDataSource = {
   //reducer for mapping
@@ -30,7 +31,7 @@ const notificationDataSource = {
     }
   },
   //create notification
-  async createNotification({text,link}){
+  async createNotification({text,link,type,ForeKeys}){
     try{
 
       let newNotification = new notification({
@@ -40,19 +41,43 @@ const notificationDataSource = {
         fecha: moment().format('DD/MM/YYYY h:mm:ss')
       });
 
-      var bdNotification = await newNotification.save();
+      var bdNotification;
+
+      switch(type){
+        case 'person':
+          bdNotification = await newNotification.customCreatePerson({idPerson:ForeKeys});
+          break;
+        default:
+          return;
+      }
+      
       return this.notificationReducer(bdNotification.serialize());
     }catch(error){
       throw error;
     }
   },
   //disabled notifications
-  async disabledNotification({id}){
+  async disabledNotification({id,type}){
     try{
-        var notification = await notification.where({id:id}).fetch();
-        notification.set('enable',false);
-        var dataSaveChange = await notification.save();
-        return globalResponse("CODE4000",true,"Notification disabled correctly",'notification',notificationReducer(dataSaveChange.serialize()));
+        //validation exist
+        var search;
+
+        switch(type){
+          case 'person':
+            search = await notificationPerson.where({idPerson:id}).fetch(); 
+            break;
+          default:
+            //nothing
+            break;
+        }
+
+        if(search==null) return globalResponse("CODE4001",true,"Notification not found",'notification',null);
+
+        var notificationWork = await notification.where({id:search.serialize().idNotification}).fetch();
+
+        notificationWork.set('enable',false);
+        var dataSaveChange = await notificationWork.save();
+        return globalResponse("CODE4000",true,"Notification disabled correctly",'notification',this.notificationReducer(dataSaveChange.serialize()));
     }catch(error){
       throw error;
     }

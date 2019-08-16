@@ -38,7 +38,7 @@ const notificationDataSource = {
         text:text,
         link:link,
         enable:true,
-        fecha: moment().format('DD/MM/YYYY h:mm:ss')
+        fecha: moment().format('DD/MM/YYYY h:mm:ss a')
       });
 
       var bdNotification;

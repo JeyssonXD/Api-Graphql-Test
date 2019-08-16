@@ -1,3 +1,6 @@
+const { GraphQLScalarType } = require('graphql');
+const moment = require("moment");
+
 //data sources
 var personDataSource = require('./dataSource/person');
 var orderDataSource = require('./dataSource/order');
@@ -6,8 +9,6 @@ var notificationDataSource = require('./dataSource/notification');
 
 //helpers
 const { authorize } = require('./helper/security');
-
-
 
 //sucription
 const {notificationType}  = require('./helper/schema/suscription');
@@ -107,7 +108,15 @@ const resolvers = {
         __resolveType(data, ctx, info) {
             return data;
         }
-    }
+    },
+//scalars
+    DateTime: new GraphQLScalarType({
+        name: 'DateTime',
+        description: 'A date and time, represented as an ISO-8601 string',
+        serialize: (value) => moment(value).format("YYYY-MM-DD h:mm:ss a"),
+        parseValue: (value) => moment(value),
+        parseLiteral: (ast) => moment(ast)
+  })
 }
 
 module.exports = resolvers;

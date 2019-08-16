@@ -34,7 +34,7 @@ const typeDefs = gql`
         text: String
         link: String
         enable: Boolean
-        fecha: String
+        fecha: DateTime
     }
 
     #Entity virtual
@@ -231,6 +231,9 @@ const typeDefs = gql`
        CODE002X #Error parameters missing or invalid
        CODE003x #invalid access, need permision
     }
+
+    #-->scalar's
+    scalar DateTime
 `;
 
 module.exports = typeDefs;
